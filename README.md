@@ -1,71 +1,37 @@
-# cfcintellisense README
-
-Test
+# CFC-Intellisense
+This extension provides enhanced support for ColdFusion development in Visual Studio Code, IntelliSense for cfc methods and hover-over descriptions for cfc methods.
 
 ## Features
+IntelliSense: Offers method suggestions and auto-completions for ColdFusion components.
+Hover Descriptions: Displays method signatures and descriptions when hovering over method calls.
+CFC Methods Parsing: Dynamically parses CFC files to provide up-to-date method signatures and documentation.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## Installation
+To install the extension, follow these steps:
 
-For example if there is an image subfolder under your extension project workspace:
+You can download the extension package (.vsix file) and install it manually via the command line:
+- Clone the repo
+- ``npm i`` to install dependencies
+- ``npm run package`` to get the vsix file
+- Then right click the three dots on your vscode extension tab and "install from vsix"
 
-\!\[feature X\]\(images/feature-x.png\)
+## Usage
+Once installed, the extension will automatically activate when you open a ColdFusion file (.cfm or .cfc). You can start typing to see IntelliSense in action, or hover over existing method calls to view their descriptions. 
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+**Only supports cfc methods at this time, and only in cfscript.**
 
-## Requirements
+## Contributing
+Contributions to the extension are welcome! Here's how you can contribute:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Report Issues: If you find a bug or have a suggestion, please open an issue on our GitHub repository.
+- Submit Pull Requests: Feel free to fork the repository and submit pull requests with bug fixes or new features.
 
-## Extension Settings
+## Development Setup
+For developers looking to contribute or customize the extension, here's how to set up a development environment:
+- Clone the repository: git clone https://github.com/scicluna/cfcintellisense.git
+- Open the project folder in VS Code.
+- Run npm install to install dependencies.
+- Press F5 to open a new VS Code window with your extension loaded.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
