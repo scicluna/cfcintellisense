@@ -116,32 +116,31 @@ async function readCfcFileContent(cfcFilePath: string): Promise<string> {
     });
 }
 
-function parseMethodsFromCfcContent(content: string): Map<string, { signature: string, doc: string, returnType: string, params: Map<string, { type: string, desc: string, required: boolean }> }> {
+export function parseMethodsFromCfcContent(content: string): Map<string, { signature: string, doc: string, returnType: string, params: Map<string, { type: string, desc: string, required: boolean }> }> {
     const methodInfo = new Map();
-    const pattern = /\/\*\*\s*([\s\S]*?)\*\/\s*public\s+([\w]+)\s+function\s+([\w]+)\(\s*((?:required\s+)?\w+\s+\w+(?:,\s*(?:required\s+)?\w+\s+\w+)*)\)/g;
+    const pattern = /\/\*\*\s*([\s\S]*?)\*\/\s*public\s+([\w]+)\s+function\s+([\w]+)\(\s*((?:required\s+)?\w+\s+\w+(?:,\s*(?:required\s+)?\w+\s+\w+)*)?\)/g;
     let match;
 
     while ((match = pattern.exec(content))) {
         const docBlock = match[1];
         const returnType = match[2];
         const methodName = match[3];
-        const paramSignature = match[4]; // Capture the entire parameter signature as a string
+        const paramsSignature = match[4]; // This might be an empty string or undefined for functions without parameters
 
         const params = new Map();
-        const paramPairs = paramSignature.split(',').map(param => {
-            const parts = param.trim().match(/(required\s+)?(\w+)\s+(\w+)/);
-            if (!parts) return null;
-            return {
-                name: parts[3], 
-                type: parts[2], 
-                required: !!parts[1] // Convert to boolean
-            };
-        }).filter(Boolean);
+        if (paramsSignature) { // Only attempt to process parameters if paramsSignature is not empty
+            const paramPairs = paramsSignature.split(',').map(param => {
+                const parts = param.trim().match(/(required\s+)?(\w+)\s+(\w+)/);
+                if (!parts) return null;
+                return {
+                    name: parts[3], 
+                    type: parts[2], 
+                    required: !!parts[1] // Convert to boolean
+                };
+            }).filter(Boolean) as Array<{ name: string; type: string; required: boolean }>;
 
-        for (const param of paramPairs) {
-            if (param !== null) {
-                // TypeScript now understands that `param` cannot be null here
-                params.set(param.name, { type: param.type, desc: '', required: param.required });
+            for (const { name, type, required } of paramPairs) {
+                params.set(name, { type, desc: '', required });
             }
         }
 
@@ -168,8 +167,8 @@ function parseMethodsFromCfcContent(content: string): Map<string, { signature: s
         }
 
         // Construct the method signature including parameter types and names
-        const paramsSignature = Array.from(params).map(([name, { type, required }]) => `${required ? 'required ' : ''}${type} ${name}`).join(', ');
-        const signature = `${methodName}(${paramsSignature}): ${returnType}`;
+        const paramConstructor = Array.from(params).map(([name, { type, required }]) => `${required ? 'required ' : ''}${type} ${name}`).join(', ');
+        const signature = `${methodName}(${paramConstructor}): ${returnType}`;
 
         // Add method info to the map
         methodInfo.set(methodName, { signature, doc, returnType, params });
