@@ -116,52 +116,66 @@ async function readCfcFileContent(cfcFilePath: string): Promise<string> {
     });
 }
 
-function parseMethodsFromCfcContent(content: string): Map<string, { signature: string, doc: string, returnType: string, params: Map<string, { type: string, desc: string }> }> {
-    const methodInfo = new Map<string, { signature: string, doc: string, returnType: string, params: Map<string, { type: string, desc: string }> }>();
-    // Adjusted pattern to also capture parameter types
-    const pattern = /\/\*\*\s*([\s\S]*?)\*\/\s*public\s+([\w]+)\s+function\s+([\w]+)\(([\w\s,:\[\]]*)\)/g;
+function parseMethodsFromCfcContent(content: string): Map<string, { signature: string, doc: string, returnType: string, params: Map<string, { type: string, desc: string, required: boolean }> }> {
+    const methodInfo = new Map();
+    const pattern = /\/\*\*\s*([\s\S]*?)\*\/\s*public\s+([\w]+)\s+function\s+([\w]+)\(\s*((?:required\s+)?\w+\s+\w+(?:,\s*(?:required\s+)?\w+\s+\w+)*)\)/g;
     let match;
 
     while ((match = pattern.exec(content))) {
         const docBlock = match[1];
-        const returnType = match[2]; // Capture the return type
+        const returnType = match[2];
         const methodName = match[3];
-        const paramsSignature = match[4].trim();
+        const paramSignature = match[4]; // Capture the entire parameter signature as a string
 
-        // Extract @hint for method documentation
-        const hintMatch = docBlock.match(/@hint\s+([^\*]+)/);
-        const doc = hintMatch ? hintMatch[1].trim() : '';
+        const params = new Map();
+        const paramPairs = paramSignature.split(',').map(param => {
+            const parts = param.trim().match(/(required\s+)?(\w+)\s+(\w+)/);
+            if (!parts) return null;
+            return {
+                name: parts[3], 
+                type: parts[2], 
+                required: !!parts[1] // Convert to boolean
+            };
+        }).filter(Boolean);
 
-		const params = new Map<string, { type: string, desc: string }>();
-		const paramPairs = paramsSignature.split(',').map(param => param.trim().split(/\s+/));
-        for (const [type, name] of paramPairs) {
-            if (type && name) {
-                params.set(name, { type: type, desc: '' }); // Start with an empty description
+        for (const param of paramPairs) {
+            if (param !== null) {
+                // TypeScript now understands that `param` cannot be null here
+                params.set(param.name, { type: param.type, desc: '', required: param.required });
             }
         }
+
+        // Initial documentation block parsing
+        const hintMatch = docBlock.match(/@hint\s+([^\*]+)/);
+        const doc = hintMatch ? hintMatch[1].trim() : '';
 
         // Extract parameters details
         const paramsPattern = /@(\w+)\s+([^\*]+)/g;
         let paramsMatch;
         while ((paramsMatch = paramsPattern.exec(docBlock))) {
             if (paramsMatch[1].toLowerCase() !== 'hint') {
-                const paramInfo = paramsMatch[1].split(':'); // Split the parameter into name and type
-                const paramName = paramInfo[0].trim();
-				if (params.has(paramName)) {
-					// Update the description for the parameter
-					const paramInfo = params.get(paramName);
-					if (paramInfo) {
-						paramInfo.desc = paramsMatch[2].trim();
-					}
-				}
-	
+                const paramName = paramsMatch[1];
+                const paramDesc = paramsMatch[2].trim();
+
+                if (params.has(paramName)) {
+                    // Update the description for the parameter
+                    const paramInfo = params.get(paramName);
+                    if (paramInfo) {
+                        paramInfo.desc = paramDesc;
+                    }
+                }
             }
         }
 
-        const signature = `${methodName}(${paramsSignature}): ${returnType}`; // Include return type
+        // Construct the method signature including parameter types and names
+        const paramsSignature = Array.from(params).map(([name, { type, required }]) => `${required ? 'required ' : ''}${type} ${name}`).join(', ');
+        const signature = `${methodName}(${paramsSignature}): ${returnType}`;
+
+        // Add method info to the map
         methodInfo.set(methodName, { signature, doc, returnType, params });
     }
 
     return methodInfo;
 }
+
 

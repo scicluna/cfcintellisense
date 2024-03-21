@@ -2,7 +2,7 @@
   "name": "cfcintellisense",
   "displayName": "cfcintellisense",
   "description": "CFC-related autocompletion",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.87.0"
   },
@@ -27,7 +27,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/vscode": "^1.87.0",
