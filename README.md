@@ -1,4 +1,4 @@
-# CFC-Intellisense
+# CFCIntellisense
 This extension provides enhanced support for ColdFusion development in Visual Studio Code, IntelliSense for cfc methods and hover-over descriptions for cfc methods.
 
 ## Features
@@ -14,6 +14,7 @@ You can download the extension package (.vsix file) and install it manually via 
 - ``npm i`` to install dependencies
 - ``npm run package`` to get the vsix file
 - Then right click the three dots on your vscode extension tab and "install from vsix"
+- For the best experience while using this extension, I heavily reccomend setting up and using KamasamaK's CFML extension and KamasamaK's CFLint extension (the CFLint takes a little bit of setup, but is well worth it.)
 
 ## Usage
 Once installed, the extension will automatically activate when you open a ColdFusion file (.cfm or .cfc). You can start typing to see IntelliSense in action, or hover over existing method calls to view their descriptions. 
