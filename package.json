@@ -2,7 +2,7 @@
   "name": "cfcintellisense",
   "displayName": "cfcintellisense",
   "description": "CFC-related autocompletion",
-  "version": "0.0.3",
+  "version": "1.5.0",
   "repository": {
     "url": "https://github.com/scicluna/cfcintellisense"
   },
